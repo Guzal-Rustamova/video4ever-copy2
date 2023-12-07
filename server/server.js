@@ -19,6 +19,26 @@ app.use(express.json());
 // The result is converted to a JSON object with a key of message and value "Hello from server!"
 app.get('/message', (req, res) => {
     res.json({ message: "Hello from server!" });
+    const mysql = require('mysql2'); 
+
+  const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'nchs_se', 
+    password: 'temp2023!',
+    database: 'db.redhawks.us'
+  });
+
+  
+
+  connection.connect(function(err) {
+    if (err) 
+    {
+      console.log("Error connecting to the database", err);
+    }
+    console.log("Connected!");
+
+    connection.query("Set @num = SELECT MovieCode FROM Inventory; Set @movie = SELECT Title FROM Movie;")
+  });
 });
 
 

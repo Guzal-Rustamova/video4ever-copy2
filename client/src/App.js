@@ -4,6 +4,7 @@
 
 import './App.css';
 import React, { useState, useEffect } from "react";
+import Select from 'react-select';
 
   // You can use this function for sending POST requests You can modify it if you want to use it for GET requests as well
   // This is an asynchronous function meaning that it returns a Promise
@@ -32,7 +33,68 @@ import React, { useState, useEffect } from "react";
 function App() {
   // Use this variable whenever you want to connect to the Node.js server
   // When you create production version of a React app, this address will change
+  const options = [
+    {value: "downtown naperville", label: "Downtown Naperville"},
+    {value: "downtown yorkville", label: "Downtown Yorkville"}, 
+    {value: "south naperville", label: "South Naperville"}, 
+    {value: "downtown oswego", label: "Downtown Oswego"},
+  ];
+ 
   const baseURL = "http://localhost:8000/";
+
+  const responsePromise = fetch(baseURL, options);
+
+  /*
+  const mysql = require('mysql2'); 
+
+  const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'nchs_se', 
+    password: 'temp2023!',
+    database: 'db.redhawks.us'
+  });
+
+  
+
+  connection.connect(function(err) {
+    if (err) 
+    {
+      console.log("Error connecting to the database", err);
+    }
+    console.log("Connected!");
+  });
+  */
+  
+  
+  const customStyles = { 
+    option: (defaultStyles, state) => ({
+      ...defaultStyles, 
+      color: state.isSelected ? "#212529": "#fff",
+      backgroundColor: state.isSelected ? "#a0a0a0" : "#212529", 
+    }),
+
+    control: (defaultStyles) => ({
+      ...defaultStyles, 
+      backgroundColor: "#212529", 
+      padding: "10px", 
+      border: "none", 
+      boxShadow: "none",
+    }),
+    singleValue: (defaultStyles) => ({...defaultStyles, color: "#fff"}),
+  }
+
+  const [selected, setSelected] = useState(null); 
+
+  const handleChange = (selectedOption) => {
+    setSelected (selectedOption);
+    console.log('Option selected:', selectedOption);
+  };
+
+
+  
+
+
+
 
   // This is an example variable (message) that can be changed with the setMessage function
   // The initial state of the message is an empty string. When the variable is changed, it changes everywhere it is used.
@@ -55,12 +117,19 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-      <h1>{message}</h1>
+        <div className="Menu"> 
+          <Select options = {options} styles = {customStyles} onChange = {handleChange} autoFocus = {true}/>
 
+          <div className = "mt-4"> 
+            {selected && <>You've selected {selected.value}</>}
+          </div>
+        
+        </div>
       </header>
       
     </div>
   );
-}
+  
+};
 
 export default App;
