@@ -37,8 +37,14 @@ app.get('/message', (req, res) => {
     }
     console.log("Connected!");
 
-    connection.query("Set @num = SELECT MovieCode FROM Inventory; Set @movie = SELECT Title FROM Movie;")
+
   });
+
+  const sql = 'SELECT * FROM Branch';
+  connection.query(sql, (err, data) => {
+    if (err) return res.json(err);  
+    return res.json(data); 
+  })
 });
 
 

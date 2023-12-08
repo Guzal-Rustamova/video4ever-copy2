@@ -121,7 +121,27 @@ function App() {
           <Select options = {options} styles = {customStyles} onChange = {handleChange} autoFocus = {true}/>
 
           <div className = "mt-4"> 
-            {selected && <>You've selected {selected.value}</>}
+            <table> 
+              <thread> 
+                <th>Movie Title</th>
+                <th>Movie Price</th>
+                <th>Director</th>
+                <th>Movies on Hand</th>
+              </thread>
+              <tbody>
+                {data.map(d => 
+                  <tr key = {i}> 
+                  <td>{d.MovieTitle}</td>
+                  <td>{d.MoviePrice}</td>
+                  <td>{d.Director}</td>
+                  <td>{d.MoviesOnHand}</td>
+                  
+                  </tr>
+                  
+                  )}
+              </tbody>
+
+            </table>
           </div>
         
         </div>
