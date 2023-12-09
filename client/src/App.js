@@ -44,28 +44,7 @@ function App() {
 
   const responsePromise = fetch(baseURL, options);
 
-  /*
-  const mysql = require('mysql2'); 
 
-  const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'nchs_se', 
-    password: 'temp2023!',
-    database: 'db.redhawks.us'
-  });
-
-  
-
-  connection.connect(function(err) {
-    if (err) 
-    {
-      console.log("Error connecting to the database", err);
-    }
-    console.log("Connected!");
-  });
-  */
-  
-  
   const customStyles = { 
     option: (defaultStyles, state) => ({
       ...defaultStyles, 
@@ -91,6 +70,7 @@ function App() {
   };
 
 
+
   
 
 
@@ -110,7 +90,25 @@ function App() {
       .then((data) => {setMessage(data.message);}
       );
   }, []);
-  
+
+  const[selectedBranch, setSelectedBranch] = useState("");
+  const[movies, setMovies] = useState([]);
+
+  useEffect(()=>{
+    if (selectedBranch){
+      fetch('http://localhost:8000/movies?branch=${selectedBranch}')
+      .then(response => response.json())
+      .then(data => setMovies(data))
+      .catch(error => console.error('Error fetching data', error));
+    }
+
+  }, [selectedBranch]);
+
+  const handleBranchChange = (event) => {
+    setSelectedBranch(event.target.value);
+  }
+
+
 
   // The message variable is displayed below and will update, if necessary
   // You can put any Javascript (JSX) code within curly brackets in a React app
@@ -120,28 +118,18 @@ function App() {
         <div className="Menu"> 
           <Select options = {options} styles = {customStyles} onChange = {handleChange} autoFocus = {true}/>
 
-          <div className = "mt-4"> 
-            <table> 
-              <thread> 
-                <th>Movie Title</th>
-                <th>Movie Price</th>
-                <th>Director</th>
-                <th>Movies on Hand</th>
-              </thread>
-              <tbody>
-                {data.map(d => 
-                  <tr key = {i}> 
-                  <td>{d.MovieTitle}</td>
-                  <td>{d.MoviePrice}</td>
-                  <td>{d.Director}</td>
-                  <td>{d.MoviesOnHand}</td>
-                  
-                  </tr>
-                  
-                  )}
-              </tbody>
-
-            </table>
+          <div className = "app-data"> 
+          {
+            movies.map((movie) => React.createElement('div', {key: movie.MovieCode, className: 'movie item'}, 
+              React.createElement('h2', {}, movie.Title), 
+              React.createElement('p', {}, 'Director: ${movie.DirectorFirst} ${movie.DirectorLast'), 
+              React.createElement('p', {}, 'Price: $${movie.Price'), 
+              React.createElement('p', {}, 'On Hand: ${movie.Onhand'), 
+              React.createElement('p', {}, 'Branch Number: ${movie.BranchNum')
+            
+            ))
+          }
+          
           </div>
         
         </div>
@@ -149,7 +137,7 @@ function App() {
       
     </div>
   );
-  
-};
+        }; 
+
 
 export default App;

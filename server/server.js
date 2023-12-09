@@ -13,38 +13,35 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const mysql = require('mysql2'); 
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'nchs_se', 
+  password: 'temp2023!',
+  database: 'db.redhawks.us'
+});
+connection.connect((err) => 
+{
+  if (err) {
+    console.log("Error connecting to the database", err);
+  }else {
+    console.log("Connected to the database!");
+  }
+})
+
+
 // This is an example GET request endpoint
 // req is the request object that was sent
 // res is the result object of the request
 // The result is converted to a JSON object with a key of message and value "Hello from server!"
 app.get('/message', (req, res) => {
-    res.json({ message: "Hello from server!" });
-    const mysql = require('mysql2'); 
-
-  const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'nchs_se', 
-    password: 'temp2023!',
-    database: 'db.redhawks.us'
-  });
-
+    const sql = 'SELECT Title, Price, DirectorFirst, DirectorLast, OnHand, BranchNum FROM Movie, Director, Directed, Inventory WHERE Director.DirectorNum = Directed.DirectorNum AND Movie.MovieCode = Inventory.MovieCode AND Movie.MovieCode = Directed.MovieCode;';
   
-
-  connection.connect(function(err) {
-    if (err) 
-    {
-      console.log("Error connecting to the database", err);
-    }
-    console.log("Connected!");
-
-
-  });
-
-  const sql = 'SELECT * FROM Branch';
-  connection.query(sql, (err, data) => {
-    if (err) return res.json(err);  
-    return res.json(data); 
-  })
+    connection.query(sql, (err, res) => {
+      if (err) return res.json(err);  
+      return res.json(res); 
+    })
+  
 });
 
 
