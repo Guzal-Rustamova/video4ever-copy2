@@ -6,6 +6,7 @@ import './App.css';
 import React, { useState, useEffect } from "react";
 import Select from 'react-select';
 
+
   // You can use this function for sending POST requests You can modify it if you want to use it for GET requests as well
   // This is an asynchronous function meaning that it returns a Promise
   // A Promise means it will either return a valid value or reject the request
@@ -33,17 +34,7 @@ import Select from 'react-select';
 function App() {
   // Use this variable whenever you want to connect to the Node.js server
   // When you create production version of a React app, this address will change
-  const options = [
-    {value: "downtown naperville", label: "Downtown Naperville"},
-    {value: "downtown yorkville", label: "Downtown Yorkville"}, 
-    {value: "south naperville", label: "South Naperville"}, 
-    {value: "downtown oswego", label: "Downtown Oswego"},
-  ];
- 
   const baseURL = "http://localhost:8000/";
-
-  const responsePromise = fetch(baseURL, options);
-
 
   const customStyles = { 
     option: (defaultStyles, state) => ({
@@ -62,6 +53,18 @@ function App() {
     singleValue: (defaultStyles) => ({...defaultStyles, color: "#fff"}),
   }
 
+  const [branches, setBranches] = useState([]);
+
+  // useEffect will run when the app loads
+  // This is referred to as an effect hook
+  // This effect will modify the message based on what is returned from a GET request to the server's message 
+  useEffect(() => {
+    fetch(`${baseURL}branches`)
+      .then((res) => res.json())
+      .then((data) => {setBranches(data);}
+      );
+  }, []);
+
   const [selected, setSelected] = useState(null); 
 
   const handleChange = (selectedOption) => {
@@ -70,72 +73,59 @@ function App() {
   };
 
 
-
-  
-
-
-
-
-  // This is an example variable (message) that can be changed with the setMessage function
-  // The initial state of the message is an empty string. When the variable is changed, it changes everywhere it is used.
-  // This is referred to as a state hook
-  const [message, setMessage] = useState("");
-
-  // useEffect will run when the app loads
-  // This is referred to as an effect hook
-  // This effect will modify the message based on what is returned from a GET request to the server's message 
-  useEffect(() => {
-    fetch(`${baseURL}message`)
-      .then((res) => res.json())
-      .then((data) => {setMessage(data.message);}
-      );
-  }, []);
-
-  const[selectedBranch, setSelectedBranch] = useState("");
   const[movies, setMovies] = useState([]);
 
   useEffect(()=>{
-    if (selectedBranch){
-      fetch('http://localhost:8000/movies?branch=${selectedBranch}')
+    console.log('getting movies')
+    if (selected && selected.value){
+      console.log(`getting movies for ${selected.value}`)
+      fetch(`${baseURL}movies?branch=${selected.value}`)
       .then(response => response.json())
-      .then(data => setMovies(data))
+      .then(data => {
+      console.log('Received data:', data); 
+      setMovies(data); 
+      })
       .catch(error => console.error('Error fetching data', error));
     }
 
-  }, [selectedBranch]);
-
-  const handleBranchChange = (event) => {
-    setSelectedBranch(event.target.value);
-  }
-
+  }, [selected]);
 
 
   // The message variable is displayed below and will update, if necessary
   // You can put any Javascript (JSX) code within curly brackets in a React app
   return (
     <div className="App">
-      <header className="App-header">
-        <div className="Menu"> 
-          <Select options = {options} styles = {customStyles} onChange = {handleChange} autoFocus = {true}/>
+    <header className="App-header">
+      <div className="Menu"> 
+      <h1>Welcome to Video4Ever!</h1>
 
-          <div className = "app-data"> 
+        <Select options = {branches} styles = {customStyles} onChange = {handleChange} autoFocus = {true}/>
+
+        <div className = "app-data"> 
+          <table>
           {
-            movies.map((movie) => React.createElement('div', {key: movie.MovieCode, className: 'movie item'}, 
-              React.createElement('h2', {}, movie.Title), 
-              React.createElement('p', {}, 'Director: ${movie.DirectorFirst} ${movie.DirectorLast'), 
-              React.createElement('p', {}, 'Price: $${movie.Price'), 
-              React.createElement('p', {}, 'On Hand: ${movie.Onhand'), 
-              React.createElement('p', {}, 'Branch Number: ${movie.BranchNum')
-            
+            (movies.length > 0) &&
+            <tr>
+              <th>Title</th>
+              <th>Director</th>
+              <th>Price</th>
+              <th>On Hand</th>
+            </tr>
+          }
+          {
+            movies.map((movie) => React.createElement('tr', {key: movie.MovieCode, className: 'movie item'}, 
+              React.createElement('td', {}, movie.Title), 
+              React.createElement('td', {}, `${movie.DirectorFirst} ${movie.DirectorLast}`), 
+              React.createElement('td', {}, movie.Price), 
+              React.createElement('td', {}, movie.OnHand), 
             ))
           }
-          
-          </div>
-        
+          </table>
         </div>
-      </header>
-      
-    </div>
+      </div>
+    </header>
+    
+  </div>
   );
         }; 
 

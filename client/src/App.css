@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+table, th {
+  border: 1px solid;
+  
+}
+table {
+  width: 100%;
+}
+.center {
+  margin-left: auto; 
+  margin-right: auto;
+}
+tr, td {
+  padding: 15px; 
+  text-align: center; 
+}
+td:hover {background-color: pink;}
+tr:nth-child(even) {background-color: #6897bb;}
+h1 {
+  color: #6897bb; 
+  text-shadow: 2px 2px pink; 
+}

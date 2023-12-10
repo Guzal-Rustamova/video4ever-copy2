@@ -15,10 +15,10 @@ app.use(express.json());
 
 const mysql = require('mysql2'); 
 const connection = mysql.createConnection({
-  host: 'localhost',
+  host: 'db.redhawks.us',
   user: 'nchs_se', 
   password: 'temp2023!',
-  database: 'db.redhawks.us'
+  database: 'video4ever'
 });
 connection.connect((err) => 
 {
@@ -34,15 +34,32 @@ connection.connect((err) =>
 // req is the request object that was sent
 // res is the result object of the request
 // The result is converted to a JSON object with a key of message and value "Hello from server!"
-app.get('/message', (req, res) => {
-    const sql = 'SELECT Title, Price, DirectorFirst, DirectorLast, OnHand, BranchNum FROM Movie, Director, Directed, Inventory WHERE Director.DirectorNum = Directed.DirectorNum AND Movie.MovieCode = Inventory.MovieCode AND Movie.MovieCode = Directed.MovieCode;';
-  
-    connection.query(sql, (err, res) => {
+app.get('/branches', (req, res) => {
+  const sql = 'SELECT BranchNum as value, BranchName as label '
+  + ' FROM Branch ';
+
+    
+    
+    connection.query(sql, (err, data) => {
       if (err) return res.json(err);  
-      return res.json(res); 
+      return res.json(data); 
     })
   
 });
+
+app.get('/movies', (req, res) => {
+  const sql = 'SELECT Title, Price, DirectorFirst, DirectorLast, OnHand '
++ ' FROM Movie, Director, Directed, Inventory'
++ ' WHERE Director.DirectorNum = Directed.DirectorNum'
++ ' AND Movie.MovieCode = Inventory.MovieCode'
++ ' AND Movie.MovieCode = Directed.MovieCode'
++ ` AND Inventory.BranchNum = ${req.query.branch}`;
+
+  connection.query(sql, (err, data) => {
+    if (err) return res.json(err);  
+    return res.json(data); 
+  })
+})
 
 
 // This will check if the server is running on port 8000
