@@ -36,8 +36,8 @@ connection.connect((err) =>
 // The result is converted to a JSON object with a key of message and value "Hello from server!"
 app.get('/branches', (req, res) => {
   const sql = 'SELECT BranchNum as value, BranchName as label '
-  + ' FROM Branch ';
-
+  + ' FROM Branch '
+  + ' ORDER BY BranchNum';
     
     
     connection.query(sql, (err, data) => {
